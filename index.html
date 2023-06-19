@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/milligram.css">
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Product Code</th>
+                <th>Unit Price</th>
+                <th>Qty</th>
+                <th>Total Price</th>
+                <th>Update</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody id="itemList">
+
+
+        </tbody>
+    </table>
+    <script src="js/axiosminified.js"></script>
+
+    <script>
+        GetList();
+        async function GetList(){
+            let res= await axios.get('https://crud.teamrabbil.com/api/v1/ReadProduct');
+
+            if(res.status==200){
+                let list=res.data['data'];
+                list.forEach(item => {
+                    document.getElementById('itemList').innerHTML+=(
+                        `
+                        <tr>
+                            <td>${item['ProductName']}</td>
+                            <td>${item['ProductCode']}</td>
+                            <td>${item['UnitPrice']}</td>
+                            <td>${item['Qty']}</td>
+                            <td>${item['TotalPrice']}</td>
+                            <td><button onclick="deleteItem('${item['_id']}')">Delete</button></td>
+                            <td><button onClick="updateItem('${item['_id']}')">Update</button></td>
+                        </tr>
+                        `
+                    )
+            });
+            }
+            else{
+                console.log('error');
+            }
+        }
+        //Delete function
+        async function deleteItem(id){
+            let res=await axios.get(`https://crud.teamrabbil.com/api/v1/DeleteProduct/${id}`);
+            if(res.status==200){
+                document.getElementById('itemList').innerHTML='';
+                GetList();
+            }
+            else{
+                alert('Error');
+            }
+        }
+
+        async function updateItem(id){
+            window.location.href=`update.html?id=${id}`;
+        }
+    </script>
+</body>
+</html>
